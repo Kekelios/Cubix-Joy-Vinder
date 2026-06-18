@@ -1,11 +1,24 @@
 using UnityEngine;
 
+/// <summary>
+/// Orchestre la logique centrale du niveau : vie du joueur, destruction des ennemis,
+/// drop de coeurs et transitions vers victoire/défaite.
+/// Aucune logique UI ici — tout passe par UIManager.
+/// </summary>
 public class LevelManager : MonoBehaviour
 {
     public static LevelManager Instance { get; private set; }
 
-    [SerializeField] private int coeurs = 3;
+    [SerializeField] private int coeurs    = 3;
+    [SerializeField] private int coeursMax = 3;
     [SerializeField] private LevelConfig config;
+
+    [Header("Drop de cœur")]
+    /// <summary>Prefab du pickup coeur laissé par les ennemis vaincus.</summary>
+    [SerializeField] private GameObject prefabCoeur;
+
+    /// <summary>Probabilité (0 à 1) qu'un ennemi vaincu laisse tomber un coeur.</summary>
+    [SerializeField] [Range(0f, 1f)] private float probabiliteDropCoeur = 0.2f;
 
     private void Awake()
     {
@@ -17,14 +30,41 @@ public class LevelManager : MonoBehaviour
         Instance = this;
     }
 
-    /// <summary>Appelé par BulletBehavior quand un ennemi est touché.</summary>
+    /// <summary>
+    /// Appelé par BulletBehavior quand un ennemi est touché.
+    /// La position de l'ennemi est sauvegardée avant sa destruction pour le drop.
+    /// </summary>
     public void OnEnnemieDetruit(GameObject ennemi)
     {
+        // Sauvegarde la position avant destruction (SupprimerEnnemi appelle Destroy)
+        Vector3 positionDrop = ennemi.transform.position;
+
         EnemyGrid.Instance.SupprimerEnnemi(ennemi);
         ScoreManager.Instance.AjouterPoint();
 
+        TenterDropCoeur(positionDrop);
+
         if (EnemyGrid.Instance.NombreEnnemisRestants() == 0)
             OnVictoire();
+    }
+
+    /// <summary>
+    /// Fait apparaître un pickup coeur à la position donnée selon la probabilité configurée.
+    /// </summary>
+    private void TenterDropCoeur(Vector3 position)
+    {
+        if (prefabCoeur != null && Random.value < probabiliteDropCoeur)
+            Instantiate(prefabCoeur, position, Quaternion.identity);
+    }
+
+    /// <summary>
+    /// Appelé par HeartPickup quand le joueur ramasse un coeur.
+    /// Le nombre de coeurs est incrémenté sans dépasser coeursMax.
+    /// </summary>
+    public void OnRamassageCoeur()
+    {
+        coeurs = Mathf.Min(coeurs + 1, coeursMax);
+        UIManager.Instance.MettreAJourCoeurs(coeurs);
     }
 
     /// <summary>Appelé quand le joueur subit des dégâts.</summary>
@@ -48,9 +88,7 @@ public class LevelManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Affiche le panneau Victoire avec le score actuel.
-    /// La navigation vers la scène suivante est entièrement gérée par VictoireUI
-    /// (boutons Suivant et Quitter), sans charger directement la scène ici.
+    /// Affiche le panneau Victoire. La navigation est gérée par VictoireUI.
     /// </summary>
     public void OnVictoire()
     {

@@ -1,13 +1,23 @@
-using System.Linq;
 using UnityEngine;
 using TMPro;
 
+/// <summary>
+/// Gère l'affichage de tous les éléments UI du HUD et des panneaux de fin de partie.
+/// Un seul script, une seule responsabilité : l'interface visuelle.
+/// Aucune logique de jeu ici.
+/// </summary>
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
 
     [SerializeField] private TextMeshProUGUI texteScore;
-    [SerializeField] private TextMeshProUGUI texteCoeurs;
+
+    /// <summary>
+    /// Tableau des 3 blocs visuels représentant les cœurs du joueur.
+    /// Indice 0 = Heart1 (gauche), 1 = Heart2 (milieu), 2 = Heart3 (droite).
+    /// </summary>
+    [SerializeField] private GameObject[] blocsCoeurs;
+
     [SerializeField] private GameObject panneauGameOver;
     [SerializeField] private GameObject panneauVictoire;
     [SerializeField] private TextMeshProUGUI texteScoreGameOver;
@@ -40,12 +50,22 @@ public class UIManager : MonoBehaviour
             texteScore.text = $"Score : {score}";
     }
 
-    /// <summary>Met à jour l'affichage des coeurs dans le HUD.</summary>
+    /// <summary>
+    /// Met à jour les blocs cœurs visuels selon le nombre de cœurs restants.
+    /// Les blocs sont masqués de droite à gauche : 3 cœurs → tous visibles,
+    /// 2 cœurs → Heart3 caché, 1 cœur → Heart2 et Heart3 cachés, 0 → tous cachés.
+    /// </summary>
     public void MettreAJourCoeurs(int coeurs)
     {
-        if (texteCoeurs == null) return;
+        if (blocsCoeurs == null) return;
+
         int count = Mathf.Max(0, coeurs);
-        texteCoeurs.text = string.Join(" ", Enumerable.Repeat("❤", count));
+
+        for (int i = 0; i < blocsCoeurs.Length; i++)
+        {
+            if (blocsCoeurs[i] != null)
+                blocsCoeurs[i].SetActive(i < count);
+        }
     }
 
     /// <summary>Affiche le panneau Game Over avec le score final.</summary>
