@@ -4,11 +4,12 @@ using UnityEngine.SceneManagement;
 public class GameOverUI : MonoBehaviour
 {
     private const string LEVEL1_SCENE = "Level1Scene";
-    private const string MENU_SCENE   = "MenuScene";
+    private const string MENU_SCENE = "MenuScene";
 
     /// <summary>Relance le niveau 1 en réinitialisant le score.</summary>
     public void SurClicRejouer()
     {
+        Time.timeScale = 1f; // ← AJOUT
         ScoreManager.Instance.ReinitialiserScore();
         SceneManager.LoadScene(LEVEL1_SCENE);
     }
@@ -16,6 +17,7 @@ public class GameOverUI : MonoBehaviour
     /// <summary>Retourne au menu principal en réinitialisant le score.</summary>
     public void SurClicRetourMenu()
     {
+        Time.timeScale = 1f; // ← AJOUT
         ScoreManager.Instance.ReinitialiserScore();
         SceneManager.LoadScene(MENU_SCENE);
     }
