@@ -3745,6 +3745,7 @@ MonoBehaviour:
   coeurs: 3
   coeursMax: 3
   config: {fileID: 11400000, guid: 1d939fd8b1eb3a34b93705bc9bb9f16e, type: 2}
+  prefabFXMort: {fileID: 393631040636001837, guid: bd86f8a197ad09347b687dbf44b118ac, type: 3}
   prefabCoeur: {fileID: 1294055484390978604, guid: c27cca215f80a8a4faff7a0bfdb16f65, type: 3}
   probabiliteDropCoeur: 0.1
 --- !u!1 &1887978606

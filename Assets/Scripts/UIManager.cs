@@ -23,7 +23,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI texteScoreGameOver;
     [SerializeField] private TextMeshProUGUI texteScoreVictoire;
 
-    private const int CoeursInitiaux = 3;
+    private const int COEURS_INITIAUX = 3;
 
     private void Awake()
     {
@@ -38,7 +38,7 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         MettreAJourScore(0);
-        MettreAJourCoeurs(CoeursInitiaux);
+        MettreAJourCoeurs(COEURS_INITIAUX);
         panneauGameOver?.SetActive(false);
         panneauVictoire?.SetActive(false);
     }

@@ -11,14 +11,20 @@ public class HeartPickup : MonoBehaviour
     /// <summary>Vitesse de chute vers le bas, en unités/seconde.</summary>
     [SerializeField] private float vitesseChute = 3f;
 
+    private Camera cameraJeu;
+
+    private void Start()
+    {
+        cameraJeu = Camera.main;
+    }
+
     private void Update()
     {
         transform.Translate(Vector3.down * vitesseChute * Time.deltaTime);
 
-        // Auto-destruction quand le pickup sort de l'écran par le bas
-        if (Camera.main != null)
+        if (cameraJeu != null)
         {
-            float limiteY = Camera.main.orthographicSize + 2f;
+            float limiteY = cameraJeu.orthographicSize + 2f;
             if (transform.position.y < -limiteY)
                 Destroy(gameObject);
         }

@@ -42,9 +42,9 @@ public class EnemyGrid : MonoBehaviour
     private float direction = 1f;
     private bool spawnTermine = false;
 
-    private const float MargeX = 0.5f;
-    private const float DelaiEntreEnnemis = 0.05f;
-    private const float DelaiEntreLignes = 0.3f;
+    private const float MARGE_X              = 0.5f;
+    private const float DELAI_ENTRE_ENNEMIS  = 0.05f;
+    private const float DELAI_ENTRE_LIGNES   = 0.3f;
 
     private void Awake()
     {
@@ -61,29 +61,33 @@ public class EnemyGrid : MonoBehaviour
         StartCoroutine(SpawnEnnemisCoroutine());
     }
 
+    private void OnDestroy()
+    {
+        StopAllCoroutines();
+    }
+
     private IEnumerator SpawnEnnemisCoroutine()
     {
         if (prefabEnnemi == null || config == null) yield break;
 
         float totalWidth = (config.colonnesEnnemis - 1) * config.espacementEnnemis;
-        float startX    = -totalWidth / 2f;
+        float startX     = -totalWidth / 2f;
         Transform parent = conteneurEnnemis != null ? conteneurEnnemis : transform;
 
         // ── Pré-sélection aléatoire des indices tireurs (Level2 uniquement) ────────
         var indicesTireurs = new HashSet<int>();
         if (estNiveau2 && prefabEnnemiTireur != null)
         {
-            int total        = config.lignesEnnemis * config.colonnesEnnemis;
-            int nbrTireurs   = Mathf.Max(1, Mathf.RoundToInt(total * proportionTireurs));
-            var selection    = Enumerable.Range(0, total)
-                                         .OrderBy(_ => Random.value)
-                                         .Take(nbrTireurs);
+            int total      = config.lignesEnnemis * config.colonnesEnnemis;
+            int nbrTireurs = Mathf.Max(1, Mathf.RoundToInt(total * proportionTireurs));
+            var selection  = Enumerable.Range(0, total)
+                                       .OrderBy(_ => Random.value)
+                                       .Take(nbrTireurs);
             foreach (int idx in selection)
                 indicesTireurs.Add(idx);
         }
 
         // ── Calcul du découpage en vagues ─────────────────────────────────────────
-        // En Level2 : moitié des lignes par vague. En Level1 : une seule passe.
         int lignesVague1 = estNiveau2
             ? Mathf.Max(1, config.lignesEnnemis / 2)
             : config.lignesEnnemis;
@@ -104,12 +108,11 @@ public class EnemyGrid : MonoBehaviour
                 );
                 SpawnEnnemi(pos, parent, indicesTireurs.Contains(spawnIndex));
                 spawnIndex++;
-                yield return new WaitForSeconds(DelaiEntreEnnemis);
+                yield return new WaitForSeconds(DELAI_ENTRE_ENNEMIS);
             }
-            yield return new WaitForSeconds(DelaiEntreLignes);
+            yield return new WaitForSeconds(DELAI_ENTRE_LIGNES);
         }
 
-        // La vague 1 est en place : les ennemis commencent à se déplacer
         spawnTermine = true;
 
         // ── PAUSE + VAGUE 2 (Level2 uniquement) ───────────────────────────────────
@@ -117,8 +120,6 @@ public class EnemyGrid : MonoBehaviour
         {
             yield return new WaitForSeconds(delaiEntreVagues);
 
-            // La vague 2 spawn depuis le haut de l'écran (même startY),
-            // indépendamment de la position actuelle du conteneur.
             float startYVague2 = Camera.main != null ? Camera.main.orthographicSize - 1f : 4f;
             int lignesVague2   = config.lignesEnnemis - lignesVague1;
 
@@ -133,13 +134,12 @@ public class EnemyGrid : MonoBehaviour
                     );
                     SpawnEnnemi(pos, parent, indicesTireurs.Contains(spawnIndex));
                     spawnIndex++;
-                    yield return new WaitForSeconds(DelaiEntreEnnemis);
+                    yield return new WaitForSeconds(DELAI_ENTRE_ENNEMIS);
                 }
-                yield return new WaitForSeconds(DelaiEntreLignes);
+                yield return new WaitForSeconds(DELAI_ENTRE_LIGNES);
             }
         }
 
-        // Level1 : activation des tireurs via la config (comportement original)
         if (config.ennemisCanShoot && !estNiveau2)
             ActiverTireursParConfig();
     }
@@ -163,7 +163,7 @@ public class EnemyGrid : MonoBehaviour
     }
 
     /// <summary>
-    /// Activation des tireurs pour Level1 via la config (comportement original).
+    /// Activation des tireurs pour Level1 via la config.
     /// Active les ennemis les plus bas de chaque colonne selon nombreTireursParColonne.
     /// </summary>
     private void ActiverTireursParConfig()
@@ -199,7 +199,7 @@ public class EnemyGrid : MonoBehaviour
 
         if (Camera.main != null)
         {
-            float limiteX = Camera.main.orthographicSize * Camera.main.aspect - MargeX;
+            float limiteX = Camera.main.orthographicSize * Camera.main.aspect - MARGE_X;
 
             bool bordAtteint = direction > 0f
                 ? ennemis.Any(e => e != null && e.transform.position.x > limiteX)

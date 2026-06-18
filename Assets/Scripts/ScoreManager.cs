@@ -6,7 +6,7 @@ public class ScoreManager : MonoBehaviour
 
     [SerializeField] private int scoreActuel;
 
-    private const string BestScoreKey = "BestScore";
+    private const string BEST_SCORE_KEY = "BestScore";
 
     private void Awake()
     {
@@ -19,10 +19,16 @@ public class ScoreManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    /// <summary>Incrémente le score et met à jour l'UI.</summary>
+    /// <summary>Incrémente le score de 1 et met à jour l'UI.</summary>
     public void AjouterPoint()
     {
-        scoreActuel++;
+        AjouterPoints(1);
+    }
+
+    /// <summary>Incrémente le score du montant donné et met à jour l'UI.</summary>
+    public void AjouterPoints(int montant)
+    {
+        scoreActuel += montant;
         UIManager.Instance?.MettreAJourScore(scoreActuel);
     }
 
@@ -35,10 +41,10 @@ public class ScoreManager : MonoBehaviour
     /// <summary>Sauvegarde le meilleur score dans PlayerPrefs si le score actuel est supérieur.</summary>
     public void SauvegarderMeilleurScore()
     {
-        int savedBest = PlayerPrefs.GetInt(BestScoreKey, 0);
+        int savedBest = PlayerPrefs.GetInt(BEST_SCORE_KEY, 0);
         if (scoreActuel > savedBest)
         {
-            PlayerPrefs.SetInt(BestScoreKey, scoreActuel);
+            PlayerPrefs.SetInt(BEST_SCORE_KEY, scoreActuel);
             PlayerPrefs.Save();
         }
     }
@@ -47,5 +53,14 @@ public class ScoreManager : MonoBehaviour
     public int ObtenirScore()
     {
         return scoreActuel;
+    }
+
+    /// <summary>
+    /// Lit le meilleur score depuis PlayerPrefs sans nécessiter d'instance.
+    /// Utilisable depuis n'importe quelle scène, même si ScoreManager n'est pas encore chargé.
+    /// </summary>
+    public static int LireMeilleurScore()
+    {
+        return PlayerPrefs.GetInt(BEST_SCORE_KEY, 0);
     }
 }

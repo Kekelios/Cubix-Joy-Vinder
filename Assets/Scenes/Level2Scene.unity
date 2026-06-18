@@ -1781,6 +1781,7 @@ MonoBehaviour:
   coeurs: 3
   coeursMax: 3
   config: {fileID: 11400000, guid: d5a9d969ed4a06549be685e19dde7c68, type: 2}
+  prefabFXMort: {fileID: 393631040636001837, guid: bd86f8a197ad09347b687dbf44b118ac, type: 3}
   prefabCoeur: {fileID: 1294055484390978604, guid: c27cca215f80a8a4faff7a0bfdb16f65, type: 3}
   probabiliteDropCoeur: 0.1
 --- !u!1 &796598529
@@ -2877,7 +2878,7 @@ MonoBehaviour:
   prefabEnnemi: {fileID: 5044939105292453022, guid: 381bd409f01976640a1cd950aa179db9, type: 3}
   prefabEnnemiTireur: {fileID: 1698235291606866161, guid: 240b8812fbeb20f4aad49d00b04dbece, type: 3}
   estNiveau2: 1
-  proportionTireurs: 0.25
+  proportionTireurs: 0.3
   delaiEntreVagues: 12
   conteneurEnnemis: {fileID: 1858799300}
 --- !u!1 &1479252525

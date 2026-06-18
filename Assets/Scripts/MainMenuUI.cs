@@ -6,22 +6,19 @@ public class MainMenuUI : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI texteMeilleurScore;
 
-    private const string BestScoreKey = "BestScore";
-    private const string Level1Scene = "Level1Scene";
+    private const string LEVEL1_SCENE = "Level1Scene";
 
     private void Start()
     {
-        int meilleurScore = PlayerPrefs.GetInt(BestScoreKey, 0);
         if (texteMeilleurScore != null)
-            texteMeilleurScore.text = $"Meilleur score : {meilleurScore}";
+            texteMeilleurScore.text = $"Meilleur score : {ScoreManager.LireMeilleurScore()}";
     }
 
     /// <summary>Réinitialise le score et charge la scène Level1Scene.</summary>
     public void SurClicJouer()
     {
-        // On remet le score à 0 avant de démarrer une nouvelle partie
         ScoreManager.Instance?.ReinitialiserScore();
-        SceneManager.LoadScene(Level1Scene);
+        SceneManager.LoadScene(LEVEL1_SCENE);
     }
 
     /// <summary>Quitte l'application.</summary>

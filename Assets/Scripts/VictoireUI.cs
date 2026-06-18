@@ -8,9 +8,9 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class VictoireUI : MonoBehaviour
 {
-    private const string NomLevel1 = "Level1Scene";
-    private const string NomLevel2 = "Level2Scene";
-    private const string NomMenu   = "MenuScene";
+    private const string NOM_LEVEL_1 = "Level1Scene";
+    private const string NOM_LEVEL_2 = "Level2Scene";
+    private const string NOM_MENU    = "MenuScene";
 
     /// <summary>
     /// Charge le niveau suivant en conservant le score courant.
@@ -22,17 +22,15 @@ public class VictoireUI : MonoBehaviour
     {
         string sceneActuelle = SceneManager.GetActiveScene().name;
 
-        if (sceneActuelle == NomLevel1)
+        if (sceneActuelle == NOM_LEVEL_1)
         {
-            // Niveau 1 terminé : passage au niveau 2 avec le score conservé
-            SceneManager.LoadScene(NomLevel2);
+            SceneManager.LoadScene(NOM_LEVEL_2);
         }
         else
         {
-            // Dernier niveau terminé : sauvegarde du meilleur score avant remise à 0
             ScoreManager.Instance.SauvegarderMeilleurScore();
             ScoreManager.Instance.ReinitialiserScore();
-            SceneManager.LoadScene(NomMenu);
+            SceneManager.LoadScene(NOM_MENU);
         }
     }
 
@@ -44,6 +42,6 @@ public class VictoireUI : MonoBehaviour
     public void SurClicQuitter()
     {
         ScoreManager.Instance.SauvegarderMeilleurScore();
-        SceneManager.LoadScene(NomMenu);
+        SceneManager.LoadScene(NOM_MENU);
     }
 }

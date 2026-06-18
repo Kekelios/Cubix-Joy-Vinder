@@ -33,10 +33,7 @@ public class PlayerController : MonoBehaviour
             ? Camera.main.orthographicSize * Camera.main.aspect - 0.5f
             : 8f;
 
-        // Verrouille la position Y initiale du joueur pour tout le jeu
         positionY = transform.position.y;
-
-        // Récupère le renderer pour le clignotement (cherche aussi sur les enfants)
         rendererJoueur = GetComponentInChildren<Renderer>();
     }
 
@@ -45,14 +42,13 @@ public class PlayerController : MonoBehaviour
         var keyboard = Keyboard.current;
         if (keyboard == null) return;
 
-        // Supporte AZERTY (Q/D) et QWERTY (A/D) + flèches directionnelles
         float h = 0f;
         if (keyboard.leftArrowKey.isPressed || keyboard.aKey.isPressed || keyboard.qKey.isPressed) h = -1f;
         if (keyboard.rightArrowKey.isPressed || keyboard.dKey.isPressed) h = 1f;
 
         Vector3 pos = transform.position;
         pos.x = Mathf.Clamp(pos.x + h * vitesseDeplacement * Time.deltaTime, -limiteX, limiteX);
-        pos.y = positionY; // Y fixe — le joueur ne bouge que sur l'axe X
+        pos.y = positionY;
         transform.position = pos;
 
         if (tempsCooldown > 0f)
@@ -68,7 +64,6 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider autre)
     {
-        // Aucun dégât pendant la frame d'invulnérabilité
         if (estInvulnerable) return;
 
         if (autre.CompareTag("EnemyBullet"))
@@ -80,6 +75,11 @@ public class PlayerController : MonoBehaviour
         {
             SubirUnCoup();
         }
+    }
+
+    private void OnDestroy()
+    {
+        StopAllCoroutines();
     }
 
     /// <summary>
@@ -111,7 +111,6 @@ public class PlayerController : MonoBehaviour
             tempsRestant -= frequenceClignotement;
         }
 
-        // Le joueur doit toujours être visible à la fin — quel que soit l'état du toggle
         if (rendererJoueur != null)
             rendererJoueur.enabled = true;
 

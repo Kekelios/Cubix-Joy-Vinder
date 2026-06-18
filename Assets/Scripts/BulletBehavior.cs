@@ -6,15 +6,21 @@ public class BulletBehavior : MonoBehaviour
     [SerializeField] private bool estProjectileEnnemi = false;
 
     private bool aDejaFrappe = false;
+    private Camera cameraJeu;
+
+    private void Start()
+    {
+        cameraJeu = Camera.main;
+    }
 
     private void Update()
     {
         float sens = estProjectileEnnemi ? -1f : 1f;
         transform.Translate(Vector3.up * vitesse * sens * Time.deltaTime);
 
-        if (Camera.main != null)
+        if (cameraJeu != null)
         {
-            float limiteY = Camera.main.orthographicSize + 2f;
+            float limiteY = cameraJeu.orthographicSize + 2f;
             if (Mathf.Abs(transform.position.y) > limiteY)
                 Destroy(gameObject);
         }

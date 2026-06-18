@@ -13,6 +13,10 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private int coeursMax = 3;
     [SerializeField] private LevelConfig config;
 
+    [Header("FX de mort")]
+    /// <summary>Prefab du FX spawné à la mort d'un ennemi.</summary>
+    [SerializeField] private GameObject prefabFXMort;
+
     [Header("Drop de cœur")]
     /// <summary>Prefab du pickup coeur laissé par les ennemis vaincus.</summary>
     [SerializeField] private GameObject prefabCoeur;
@@ -33,19 +37,33 @@ public class LevelManager : MonoBehaviour
     /// <summary>
     /// Appelé par BulletBehavior quand un ennemi est touché.
     /// La position de l'ennemi est sauvegardée avant sa destruction pour le drop.
+    /// Les ennemis tireurs (EnemyShooter) rapportent 3 points, les autres 1.
     /// </summary>
     public void OnEnnemieDetruit(GameObject ennemi)
     {
         // Sauvegarde la position avant destruction (SupprimerEnnemi appelle Destroy)
         Vector3 positionDrop = ennemi.transform.position;
 
+        EnemyShooter shooter = ennemi.GetComponent<EnemyShooter>();
+        int points = (shooter != null && shooter.enabled) ? 3 : 1;
+
+        SpawnerFXMort(positionDrop);
         EnemyGrid.Instance.SupprimerEnnemi(ennemi);
-        ScoreManager.Instance.AjouterPoint();
+        ScoreManager.Instance.AjouterPoints(points);
 
         TenterDropCoeur(positionDrop);
 
         if (EnemyGrid.Instance.NombreEnnemisRestants() == 0)
             OnVictoire();
+    }
+
+    /// <summary>
+    /// Instancie le FX de mort à la position donnée s'il est configuré.
+    /// </summary>
+    private void SpawnerFXMort(Vector3 position)
+    {
+        if (prefabFXMort != null)
+            Instantiate(prefabFXMort, position, Quaternion.identity);
     }
 
     /// <summary>
